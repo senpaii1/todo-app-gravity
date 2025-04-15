@@ -6,7 +6,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Delete, Edit, Save } from "@mui/icons-material";
+import { Delete, Edit, Save, Close } from "@mui/icons-material";
 import { Todo } from "../types/todo";
 import { motion } from "framer-motion";
 
@@ -86,8 +86,19 @@ const TodoItem: React.FC<TodoItemProps> = ({
           </IconButton>
         )}
 
-        <IconButton onClick={() => onDelete(todo.id)}>
-          <Delete />
+        <IconButton
+          edge="end"
+          aria-label={isEditing ? "cancel" : "delete"}
+          onClick={() => {
+            if (isEditing) {
+              setIsEditing(false);
+              setEditedText(todo.text);
+            } else {
+              onDelete(todo.id);
+            }
+          }}
+        >
+          {isEditing ? <Close /> : <Delete />}
         </IconButton>
       </ListItem>
     </motion.div>
