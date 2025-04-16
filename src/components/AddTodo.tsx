@@ -9,12 +9,24 @@ interface AddTodoProps {
 
 const AddTodo: React.FC<AddTodoProps> = ({ onAdd }) => {
   const [text, setText] = useState("");
+  const [error, setError] = useState("");
 
   const handleAdd = () => {
-    if (text.trim()) {
-      onAdd(text.trim());
-      setText("");
+    const trimmed = text.trim();
+
+    if (!trimmed) {
+      setError("Task cannot be empty");
+      return;
     }
+
+    if (trimmed.length < 3) {
+      setError("Task must be at least 3 characters long");
+      return;
+    }
+
+    onAdd(trimmed);
+    setText("");
+    setError("");
   };
 
   return (
@@ -24,22 +36,45 @@ const AddTodo: React.FC<AddTodoProps> = ({ onAdd }) => {
       exit={{ scale: 0.9, opacity: 0 }}
       transition={{ type: "spring", stiffness: 100 }}
     >
-      <Box display="flex" alignItems="center" gap={2}>
+      <Box display="flex" gap={2} alignItems="flex-start">
         <TextField
           label="Add a task"
           variant="outlined"
           fullWidth
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => {
+            setText(e.target.value);
+            if (error) setError("");
+          }}
           onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+          error={!!error}
+          helperText={error}
         />
-        <IconButton
-          onClick={handleAdd}
-          color="primary"
-          sx={{ bgcolor: "#1976d2", color: "#fff" }}
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            height: "100%",
+            pt: 0.3,
+          }}
         >
-          <AddIcon />
-        </IconButton>
+          <IconButton
+            onClick={handleAdd}
+            sx={{
+              bgcolor: "#1976d2",
+              color: "#fff",
+              width: 48,
+              height: 48,
+              borderRadius: "50%",
+              "&:hover": {
+                bgcolor: "#115293",
+              },
+            }}
+          >
+            <AddIcon />
+          </IconButton>
+        </Box>
       </Box>
     </motion.div>
   );
